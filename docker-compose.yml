@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:14.2-alpine
+    environment:
+      POSTGRES_USER: work-search
+      POSTGRES_PASSWORD: work-search
+      POSTGRES_DB: work-search
+    ports:
+      - "5432:5432"
