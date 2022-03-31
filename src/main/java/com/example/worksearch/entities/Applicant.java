@@ -51,7 +51,7 @@ public class Applicant {
     }
 
     public ContactType getContactType(){
-        if(this.contactType == null){
+        if (this.contactType == null){
             return ContactType.EMAIL;
         }
         return this.contactType;

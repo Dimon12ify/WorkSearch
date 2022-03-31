@@ -1,6 +1,5 @@
 package com.example.worksearch.entities;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -15,10 +14,10 @@ public class Employer {
 
     @Column(name = "name", nullable = false)
     @Getter @Setter
-    private String name;
+    private String companyName;
 
-
-    @Column(name = "email", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
     @Getter @Setter
-    private String email;
+    private City city;
 }
