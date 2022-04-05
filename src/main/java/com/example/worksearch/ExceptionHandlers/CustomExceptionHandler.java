@@ -1,12 +1,14 @@
-package com.example.worksearch.controllers;
+package com.example.worksearch.ExceptionHandlers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-class UserExceptionHandler {
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleException(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

@@ -29,12 +29,3 @@ public class EmployerController {
         return "Ok";
     }
 }
-
-@ControllerAdvice
-class CityExceptionHandler {
-
-    @ExceptionHandler({ Exception.class })
-    public ResponseEntity<Object> handleException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-}
