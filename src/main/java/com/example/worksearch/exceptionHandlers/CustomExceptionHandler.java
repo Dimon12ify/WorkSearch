@@ -1,4 +1,4 @@
-package com.example.worksearch.ExceptionHandlers;
+package com.example.worksearch.exceptionHandlers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
