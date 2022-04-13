@@ -28,10 +28,8 @@ public class WorkSearchApplicationTests {
 
     @Test
     public void should_find_all_cities() {
-        City city1 = new City();
-        city1.setName("Город1");
-        City city2 = new City();
-        city2.setName("Город2");
+        City city1 = new City("Город1");
+        City city2 = new City("Город2");
 
         manager.persistAndFlush(city1);
         manager.persistAndFlush(city2);

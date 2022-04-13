@@ -19,7 +19,7 @@ public class EmployerService {
     public void save(Employer employer) throws IllegalArgumentException {
         if (employer.getCompanyName().isEmpty())
             throw new IllegalArgumentException("Company name shouldn't be empty");
-        if (repository.findEmployerByCompanyName(employer.getCompanyName()) != null)
+        if (repository.findByCompanyName(employer.getCompanyName()) != null)
             throw new IllegalArgumentException("Employer " + employer.getCompanyName() + " is already exists");
         repository.save(employer);
     }
