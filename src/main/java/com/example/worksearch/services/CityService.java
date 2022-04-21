@@ -1,11 +1,19 @@
 package com.example.worksearch.services;
 
+import com.example.worksearch.DTOs.CityParseDTO;
 import com.example.worksearch.entities.City;
 import com.example.worksearch.repositories.CityRepository;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CityService {
@@ -16,11 +24,26 @@ public class CityService {
         this.repository = repository;
     }
 
-    public void save(City city) {
-        City savedCity = repository.findCityByName(city.getName());
-        if (savedCity == null)
-            repository.save(city);
+    public City save(City city) {
+        City existEntity = repository.findCityByName(city.getName());
+        City savedEntity;
+        if (existEntity == null)
+            savedEntity = repository.save(city);
         else
             throw new IllegalArgumentException("City with name " + city.getName() + " is already exists");
+        return savedEntity;
+    }
+
+    public Set<String> getUnsaved() throws FileNotFoundException, ParseException {
+        JSONParser parser = new JSONParser(new FileReader(System. getProperty("user.dir") + "/src/main/java/com/example/worksearch/datastabs/russian-cities.json"));
+        ArrayList<Object> a = (ArrayList<Object>) parser.parse();
+        List<CityParseDTO> list = a.stream().map(CityParseDTO::toModel).collect(Collectors.toList());
+        var cities =  list.stream().map(f -> f.name).collect(Collectors.toList());
+        var savedCities = repository.findAll().stream()
+                .map(City::getName)
+                .collect(Collectors.toList());
+        return cities.stream()
+                .filter(f -> !savedCities.contains(f))
+                .collect(Collectors.toSet());
     }
 }
