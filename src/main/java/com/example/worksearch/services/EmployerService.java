@@ -24,10 +24,14 @@ public class EmployerService {
         repository.save(employer);
     }
 
-    public List<Employer> findAll(int page, int perPage) {
+    public List<Employer> getAll(int page, int perPage) {
         page = Math.max(page, 0);
         perPage = Math.max(perPage, 10);
         // return repository.findAll().subList(page * perPage, (page + 1) * perPage);
         return repository.findAll();
+    }
+
+    public Employer getById(long id) {
+        return repository.getById(id);
     }
 }

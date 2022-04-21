@@ -5,5 +5,5 @@ import com.example.worksearch.entities.Resume;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
-    Resume findResumeByApplicant(Applicant applicant);
+    Resume getByApplicantId(Long applicantId);
 }

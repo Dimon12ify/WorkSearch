@@ -5,6 +5,7 @@ import com.example.worksearch.entities.City;
 import com.example.worksearch.repositories.CityRepository;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class CityService {
         this.repository = repository;
     }
 
-    public City save(City city) {
+    public City save(@NotNull City city) {
         City existEntity = repository.findCityByName(city.getName());
         City savedEntity;
         if (existEntity == null)
@@ -32,6 +33,25 @@ public class CityService {
         else
             throw new IllegalArgumentException("City with name " + city.getName() + " is already exists");
         return savedEntity;
+    }
+
+    public City getByName(String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Blank or empty name");
+        }
+        return repository.findCityByName(name);
+    }
+
+    public List<City> getAll() {
+        return repository.findAll();
+    }
+
+    public City getById(Long id) {
+        return repository.getById(id);
+    }
+
+    public List<String> getAllNames() {
+        return repository.findAll().stream().map(City::getName).collect(Collectors.toList());
     }
 
     public Set<String> getUnsaved() throws FileNotFoundException, ParseException {
