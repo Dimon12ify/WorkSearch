@@ -42,10 +42,7 @@ public class VacancyService {
         return null;
     }
 
-    public void edit(Vacancy vacancy) {
-        var old = repository.getById(vacancy.getId());
-        vacancy.setEmployer(old.getEmployer());
-        repository.delete(old);
-        repository.save(vacancy);
+    public Vacancy save(Vacancy vacancy){
+        return repository.save(vacancy);
     }
 }

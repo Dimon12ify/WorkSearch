@@ -34,7 +34,7 @@ public class ApplicantController {
     }
 
     @GetMapping("id/{id}")
-    public DetailedApplicantSchema getById(Long id) {
+    public DetailedApplicantSchema getById(@PathVariable Long id) {
         Applicant applicant = applicantService.getById(id);
         return DetailedApplicantSchema.fromEntity(applicant);
     }

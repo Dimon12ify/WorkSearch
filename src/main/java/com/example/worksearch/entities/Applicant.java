@@ -56,4 +56,8 @@ public class Applicant {
         }
         return this.contactType;
     }
+
+    public String getFullName(){
+        return secondName + ' ' + firstName + ' ' + patronymic;
+    }
 }

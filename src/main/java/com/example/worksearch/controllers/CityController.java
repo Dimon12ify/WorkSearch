@@ -1,5 +1,6 @@
 package com.example.worksearch.controllers;
 
+import com.example.worksearch.controllers.schemes.CitySchema;
 import com.example.worksearch.entities.City;
 import com.example.worksearch.services.CityService;
 import org.apache.coyote.Request;
@@ -39,13 +40,15 @@ public class CityController {
     }
 
     @GetMapping("name/{name}")
-    public City getByName(@PathVariable String name) {
-        return service.getByName(name);
+    public CitySchema getByName(@PathVariable String name) {
+        City city = service.getByName(name);
+        return CitySchema.fromEntity(city);
     }
 
     @GetMapping("id/{id}")
-    public City getByName(@PathVariable Long id) {
-        return service.getById(id);
+    public CitySchema getByName(@PathVariable Long id) {
+        City city = service.getById(id);
+        return CitySchema.fromEntity(city);
     }
 
     @GetMapping("all/update")
