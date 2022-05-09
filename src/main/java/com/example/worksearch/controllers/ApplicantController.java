@@ -1,47 +1,78 @@
 package com.example.worksearch.controllers;
 
+import com.example.worksearch.controllers.schemes.CreateApplicantSchema;
+import com.example.worksearch.controllers.schemes.DetailedApplicantSchema;
+import com.example.worksearch.controllers.schemes.ShortApplicantSchema;
 import com.example.worksearch.entities.Applicant;
+import com.example.worksearch.entities.City;
+import com.example.worksearch.entities.enums.ContactType;
 import com.example.worksearch.services.ApplicantService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.worksearch.services.CityService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/applicant")
 public class ApplicantController {
 
-    @Autowired
-    private ApplicantService service;
+    private final ApplicantService applicantService;
+    private final CityService cityService;
 
-    @GetMapping("all")
-    public List<Applicant> getAll() {
-        return service.getAll();
+    public ApplicantController(ApplicantService service, CityService cityService) {
+        this.applicantService = service;
+        this.cityService = cityService;
+    }
+
+    @GetMapping("")
+    public List<ShortApplicantSchema> getAll() {
+        List<Applicant> applicants = applicantService.getAll();
+        return applicants.stream()
+                .map(ShortApplicantSchema::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("id/{id}")
-    public Applicant getById(Long id) {
-        return service.getById(id);
+    public DetailedApplicantSchema getById(Long id) {
+        Applicant applicant = applicantService.getById(id);
+        return DetailedApplicantSchema.fromEntity(applicant);
     }
 
-    @GetMapping("fio/{FIO}")
-    public Applicant getByFIO(@PathVariable String FIO) {
-        return service.getByFIO(FIO);
+    @GetMapping("fullName/{fullName}")
+    public DetailedApplicantSchema getByFullName(@PathVariable String fullName) {
+        Applicant applicant = applicantService.getByFullName(fullName);
+        return DetailedApplicantSchema.fromEntity(applicant);
     }
 
     @GetMapping("contact/{contact}")
-    public Applicant getByContact(@PathVariable String contact) {
-        return service.getByContact(contact);
-    }
-
-    @PostMapping("/add")
-    public String add(@RequestBody Applicant applicant) {
-        service.save(applicant);
-        return "Ok";
+    public DetailedApplicantSchema getByContact(@PathVariable String contact) {
+        Applicant applicant = applicantService.getByContact(contact);
+        return DetailedApplicantSchema.fromEntity(applicant);
     }
 
     @GetMapping("resume/{resumeId}")
-    public Applicant getByResumeId(@PathVariable long resumeId) {
-        return service.getByResumeId(resumeId);
+    public DetailedApplicantSchema getByResumeId(@PathVariable long resumeId) {
+        Applicant applicant = applicantService.getByResumeId(resumeId);
+        return DetailedApplicantSchema.fromEntity(applicant);
+    }
+
+    @PostMapping("create")
+    public DetailedApplicantSchema create(@RequestBody CreateApplicantSchema applicantToCreate) {
+        Applicant applicant = new Applicant();
+        applicant.setEmail(applicantToCreate.getEmail());
+        applicant.setFirstName(applicantToCreate.getFirstName());
+        applicant.setSecondName(applicantToCreate.getSecondName());
+        applicant.setPatronymic(applicantToCreate.getPatronymic());
+        applicant.setContact(applicantToCreate.getContact());
+
+        ContactType contactType = ContactType.valueOf(applicantToCreate.getContactType());
+        applicant.setContactType(contactType);
+
+        City city = cityService.getById(applicantToCreate.getCityId());
+        applicant.setCity(city);
+
+        applicant = applicantService.save(applicant);
+        return DetailedApplicantSchema.fromEntity(applicant);
     }
 }

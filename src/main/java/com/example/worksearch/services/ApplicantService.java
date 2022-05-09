@@ -32,15 +32,15 @@ public class ApplicantService {
         return repository.getByContact(contact);
     }
 
-    public Applicant getByFIO(String FIO) {
-        var data = FIO.split(" ");
+    public Applicant getByFullName(String fullName) {
+        var data = fullName.split(" ");
         if (data.length > 3 || data.length < 2 || data[0].isBlank() || data[1].isBlank())
-            throw new IllegalArgumentException("Wrong FIO");
+            throw new IllegalArgumentException("Wrong full name");
         return repository.getByFirstNameAndSecondNameAndPatronymic(data[0], data[1], data[2]);
     }
 
-    public void save(Applicant applicant) {
-        repository.save(applicant);
+    public Applicant save(Applicant applicant) {
+        return repository.save(applicant);
     }
 
     public Applicant getByResumeId(long resumeId) {
