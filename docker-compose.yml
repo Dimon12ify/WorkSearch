@@ -1,11 +1,27 @@
 version: "3"
 
 services:
-  db:
+  postgres:
     image: postgres:14.2-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: work-search
       POSTGRES_PASSWORD: work-search
       POSTGRES_DB: work-search
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:
       - "5432:5432"
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+
+  app:
+    image: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "80:8080"
+volumes:
+  db_volume:

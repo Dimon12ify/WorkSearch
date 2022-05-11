@@ -1,12 +1,11 @@
 package com.example.worksearch.controllers;
 
-import com.example.worksearch.controllers.schemes.DetailedVacancySchema;
-import com.example.worksearch.controllers.schemes.ShortVacancySchema;
-import com.example.worksearch.controllers.schemes.UpdateVacancySchema;
+import com.example.worksearch.controllers.schemes.*;
 import com.example.worksearch.entities.City;
 import com.example.worksearch.entities.Vacancy;
-import com.example.worksearch.services.CityService;
-import com.example.worksearch.services.VacancyService;
+import com.example.worksearch.entities.VacancyResponse;
+import com.example.worksearch.services.*;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,15 +13,15 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/vacancy")
+@AllArgsConstructor
 public class VacancyController {
 
     private final VacancyService _vacancyService;
     private final CityService _cityService;
+    private final EmployerService _employerService;
 
-    public VacancyController(VacancyService vacancyService, CityService cityService) {
-        _vacancyService = vacancyService;
-        _cityService = cityService;
-    }
+    private final VacancyResponseService _vacancyResponseService;
+    private final ApplicantService _applicantService;
 
 
     @GetMapping("all")
@@ -86,6 +85,41 @@ public class VacancyController {
         vacancy.setStateOpen();
         Vacancy result = _vacancyService.save(vacancy);
         return DetailedVacancySchema.fromEntity(result);
+    }
+
+    @PostMapping("add")
+    public DetailedVacancySchema saveVacancy(@RequestBody CreateVacancySchema vacancySchema) {
+        var vacancy = new Vacancy();
+        if (vacancySchema.getSalary() != null)
+            vacancy.setSalary(vacancySchema.getSalary());
+
+        if (vacancySchema.getTitle() != null)
+            vacancy.setTitle(vacancySchema.getTitle());
+
+        if (vacancySchema.getDescription() != null)
+            vacancy.setDescription(vacancySchema.getDescription());
+
+        if (vacancySchema.getCityId().isPresent()) {
+            long cityId = vacancySchema.getCityId().getAsLong();
+            City newCity = _cityService.getById(cityId);
+            vacancy.setCity(newCity);
+        }
+        if (vacancySchema.getEmployerId() > 0) {
+            var employer = _employerService.getById(vacancySchema.getEmployerId());
+            vacancy.setEmployer(employer);
+        }
+        vacancy = _vacancyService.save(vacancy);
+        return DetailedVacancySchema.fromEntity(vacancy);
+    }
+
+    @PostMapping("response")
+    public VacancyResponse createVacancyResponse(@RequestBody CreateVacancyResponseSchema schema) {
+        var vacancyResponse = new VacancyResponse();
+        var vacancy = _vacancyService.getById(schema.getVacancyId());
+        var applicant = _applicantService.getById(schema.getApplicantId());
+        vacancyResponse.setVacancy(vacancy);
+        vacancyResponse.setApplicant(applicant);
+        return _vacancyResponseService.save(vacancyResponse);
     }
 
     // TODO: assignVacancy

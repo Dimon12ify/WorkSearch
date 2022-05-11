@@ -25,7 +25,7 @@ public class ApplicantController {
         this.cityService = cityService;
     }
 
-    @GetMapping("")
+    @GetMapping("all")
     public List<ShortApplicantSchema> getAll() {
         List<Applicant> applicants = applicantService.getAll();
         return applicants.stream()
@@ -57,7 +57,7 @@ public class ApplicantController {
         return DetailedApplicantSchema.fromEntity(applicant);
     }
 
-    @PostMapping("create")
+    @PostMapping("add")
     public DetailedApplicantSchema create(@RequestBody CreateApplicantSchema applicantToCreate) {
         Applicant applicant = new Applicant();
         applicant.setEmail(applicantToCreate.getEmail());

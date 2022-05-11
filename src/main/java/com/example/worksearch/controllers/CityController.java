@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.handler.RequestMatchResult;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,7 +53,7 @@ public class CityController {
     }
 
     @GetMapping("all/update")
-    public String getUnsavedAndSave() throws FileNotFoundException, ParseException {
+    public String getUnsavedAndSave() throws IOException, ParseException {
         var unsaved = service.getUnsaved();
         unsaved.forEach(f -> service.save(new City(f)));
         return "Saved " + unsaved.size() + " entities";

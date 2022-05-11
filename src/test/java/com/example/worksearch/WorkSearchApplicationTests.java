@@ -45,7 +45,7 @@ public class WorkSearchApplicationTests {
 
         manager.persistAndFlush(city1);
 
-        City result = repository.findById(1L).get();
+        City result = repository.findCityByName("Город1");
         assertThat(result.getId()).isEqualTo(1L);
     }
 

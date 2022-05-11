@@ -1,11 +1,14 @@
 package com.example.worksearch.entities;
 
 import com.example.worksearch.entities.enums.VacancyState;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Date;
 
 
 @Entity
@@ -58,6 +61,11 @@ public class Vacancy {
     @Getter
     private LocalDate closedAt;
 
+    public Vacancy() {
+        this.createdAt = LocalDate.now(Clock.systemUTC());
+        this.state = VacancyState.DRAFT;
+    }
+
     public void setStateOpen(){
         if (this.state != VacancyState.DRAFT){
             throw new IllegalStateException(
@@ -66,7 +74,7 @@ public class Vacancy {
         }
 
         this.state = VacancyState.OPEN;
-        this.publishedAt = LocalDate.now();
+        this.publishedAt = LocalDate.now(Clock.systemUTC());
     }
 
     public void setStateAssigned(){
@@ -77,7 +85,7 @@ public class Vacancy {
         }
 
         this.state = VacancyState.ASSIGNED;
-        this.assignedAt = LocalDate.now();
+        this.assignedAt = LocalDate.now(Clock.systemUTC());
     }
 
     public void setStateClosed(){
@@ -88,6 +96,6 @@ public class Vacancy {
         }
 
         this.state = VacancyState.CLOSED;
-        this.closedAt = LocalDate.now();
+        this.closedAt = LocalDate.now(Clock.systemUTC());
     }
 }
