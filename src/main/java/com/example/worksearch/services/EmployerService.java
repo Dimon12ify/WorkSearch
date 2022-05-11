@@ -16,12 +16,12 @@ public class EmployerService {
         this.repository = repository;
     }
 
-    public void save(Employer employer) throws IllegalArgumentException {
+    public Employer save(Employer employer) throws IllegalArgumentException {
         if (employer.getCompanyName().isEmpty())
             throw new IllegalArgumentException("Company name shouldn't be empty");
         if (repository.findByCompanyName(employer.getCompanyName()) != null)
             throw new IllegalArgumentException("Employer " + employer.getCompanyName() + " is already exists");
-        repository.save(employer);
+        return repository.save(employer);
     }
 
     public List<Employer> getAll(int page, int perPage) {

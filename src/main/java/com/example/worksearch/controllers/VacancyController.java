@@ -1,43 +1,93 @@
 package com.example.worksearch.controllers;
 
+import com.example.worksearch.controllers.schemes.DetailedVacancySchema;
+import com.example.worksearch.controllers.schemes.ShortVacancySchema;
+import com.example.worksearch.controllers.schemes.UpdateVacancySchema;
+import com.example.worksearch.entities.City;
 import com.example.worksearch.entities.Vacancy;
+import com.example.worksearch.services.CityService;
 import com.example.worksearch.services.VacancyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/vacancy")
 public class VacancyController {
 
-    @Autowired
-    private VacancyService service;
+    private final VacancyService _vacancyService;
+    private final CityService _cityService;
+
+    public VacancyController(VacancyService vacancyService, CityService cityService) {
+        _vacancyService = vacancyService;
+        _cityService = cityService;
+    }
+
 
     @GetMapping("all")
-    public List<Vacancy> getAll() {
-        return service.getAll();
+    public List<ShortVacancySchema> getAll() {
+        List<Vacancy> vacancies = _vacancyService.getAll();
+        return vacancies.stream()
+                .map(ShortVacancySchema::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("state/{vacancyState}")
-    public List<Vacancy> getAll(@PathVariable String vacancyState) {
-        return service.getAllByVacancyState(vacancyState);
+    public List<ShortVacancySchema> getAll(@PathVariable String vacancyState) {
+        List<Vacancy> vacancies = _vacancyService.getAllByVacancyState(vacancyState);
+        return vacancies.stream()
+                .map(ShortVacancySchema::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("id/{id}")
-    public Vacancy getById(@PathVariable long id) {
-        return service.getById(id);
+    public DetailedVacancySchema getById(@PathVariable long id) {
+        Vacancy vacancy = _vacancyService.getById(id);
+        return DetailedVacancySchema.fromEntity(vacancy);
     }
 
     @GetMapping("title/{title}")
-    public Vacancy getById(@PathVariable String title) {
-        return service.getByTitle(title);
+    public DetailedVacancySchema getById(@PathVariable String title) {
+        Vacancy vacancy = _vacancyService.getByTitle(title);
+        return DetailedVacancySchema.fromEntity(vacancy);
     }
 
     @PostMapping("{id}/edit")
-    public String edit(Vacancy vacancy, @PathVariable long id) {
-        vacancy.setId(id);
-        service.edit(vacancy);
-        return "Ok";
+    public DetailedVacancySchema edit(UpdateVacancySchema newData, @PathVariable long id) {
+        // TODO: инкапсулировть в сервис
+        // TODO: ТРАНЗАКЦИЯ + блокировка FOR UPDATE на вакансию
+
+        Vacancy vacancy = _vacancyService.getById(id);
+
+        if (newData.getSalary() != null)
+            vacancy.setSalary(newData.getSalary());
+
+        if (newData.getTitle() != null)
+            vacancy.setTitle(newData.getTitle());
+
+        if (newData.getDescription() != null)
+            vacancy.setDescription(newData.getDescription());
+
+        if (newData.getCityId().isPresent()){
+            long cityId = newData.getCityId().getAsLong();
+            City newCity = _cityService.getById(cityId);
+            vacancy.setCity(newCity);
+        }
+
+        Vacancy result = _vacancyService.save(vacancy);
+        return DetailedVacancySchema.fromEntity(result);
     }
+
+    @GetMapping("{id}/open")
+    public DetailedVacancySchema openVacancy(@PathVariable long id){
+        // TODO: ТРАНЗАКЦИЯ + блокировка FOR UPDATE на вакансию
+        Vacancy vacancy = _vacancyService.getById(id);
+        vacancy.setStateOpen();
+        Vacancy result = _vacancyService.save(vacancy);
+        return DetailedVacancySchema.fromEntity(result);
+    }
+
+    // TODO: assignVacancy
+    // TODO: closeVacancy
 }

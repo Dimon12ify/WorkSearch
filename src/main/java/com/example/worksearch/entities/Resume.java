@@ -1,6 +1,5 @@
 package com.example.worksearch.entities;
 
-import com.example.worksearch.entities.enums.MIMEType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,9 +24,8 @@ public class Resume {
     private byte[] content;
 
     @Column(name = "mime", nullable = false)
-    @Enumerated(EnumType.STRING)
     @Getter @Setter
-    private MIMEType mime;
+    private String ContentType;
 
     @Column(name = "created_at", nullable = false)
     @Getter @Setter
