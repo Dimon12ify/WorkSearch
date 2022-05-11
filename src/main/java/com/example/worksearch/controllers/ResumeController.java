@@ -3,6 +3,7 @@ package com.example.worksearch.controllers;
 import com.example.worksearch.controllers.schemes.ResumeSchema;
 import com.example.worksearch.entities.Resume;
 import com.example.worksearch.services.ResumeService;
+import lombok.AllArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/resume")
+@AllArgsConstructor
 public class ResumeController {
 
-    @Autowired
     private ResumeService service;
 
     @GetMapping("all")
